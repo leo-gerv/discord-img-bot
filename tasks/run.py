@@ -1,4 +1,5 @@
 from .utils import prepare_dict
+from .pool import assign_handle
 
 def run(text):
     """ Runs the code in the message
@@ -13,5 +14,14 @@ def run(text):
         return (False, None)
 
     # TODO: Send the data to a runner
+    ok, handle = assign_handle()
 
-    return (True, None)
+    if not ok:
+        return (False, None)
+
+    ok, result = handle.process(data)
+
+    if not ok:
+        return (False, None)
+
+    return (True, result)
