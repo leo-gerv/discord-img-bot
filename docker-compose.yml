@@ -7,3 +7,4 @@ services:
     container_name: discord-img-bot
     environment:
       - TOKEN=${TOKEN}
+    privileged: true
