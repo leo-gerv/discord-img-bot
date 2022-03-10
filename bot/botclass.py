@@ -27,3 +27,12 @@ class Bot:
             When the bot is ready, print a message to the console.
         """
         logging.info("Bot is ready.")
+
+    async def run(self):
+        """ Run the bot.
+
+            Connects to discord and starts listening for events.
+        """
+        logging.info("Bot is logging in.")
+        await self.client.login(self.token)
+        await self.client.connect()
