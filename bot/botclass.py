@@ -1,9 +1,11 @@
 # bot.py
 
 from io import BytesIO
+from PIL import Image
 import discord
 import logging
 from .commands import image_treatments
+import re
 
 class Bot(discord.Client):
     """ Discord bot class
@@ -23,7 +25,6 @@ class Bot(discord.Client):
 
             Only read message mentioning the bot.
         """
-        logging.info("Message received.")
         if message.author == self.user:
             return
 
@@ -44,8 +45,15 @@ class Bot(discord.Client):
             if len(message.attachments) > 0:
                 for attachment in message.attachments:
                     img_bytes = await attachment.read()
-                    img_bytes = img_handler(img_bytes)
-                    await message.reply(file=discord.File(BytesIO(img_bytes), filename=attachment.filename))
+                    img = Image.open(BytesIO(img_bytes))
+                    result_img = img_handler(img)
+                    with BytesIO() as f:
+                        result_img.save(f, format="PNG")
+                        f.seek(0)
+                        fn_regex = r"(.*)\.[^.]*"
+                        fn_match = re.match(fn_regex, attachment.filename)
+                        fname = fn_match.group(1) + "_" + command + ".png"
+                        await message.channel.send(file=discord.File(f, filename=fname))
             else:
                 await message.reply("No image attached.")
 
