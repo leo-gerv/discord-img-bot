@@ -1,5 +1,7 @@
 # Multi-purpose image bot for discord
 
+# ** WORK IN PROGRESS **
+
 A discord bot to quickly edit images, apply filters, convert images to ASCII art, encode images with custom formats.
 
 ## Getting Started
