@@ -3,23 +3,11 @@
 import discord
 import logging
 
-class Bot:
+class Bot(discord.Client):
     """ Discord bot class
 
         Interacts with discord.py to listen for events and handle them accordingly.
     """
-
-    def __init__(self, token):
-        """ Initialize the bot.
-
-            Args:
-                token (str): Discord bot token.
-        """
-        self.token = token
-        self.client = discord.Client()
-
-        # event handlers
-        self.client.on_ready = self.on_ready
 
     async def on_ready(self):
         """ On ready event handler.
@@ -28,11 +16,16 @@ class Bot:
         """
         logging.info("Bot is ready.")
 
-    async def run(self):
-        """ Run the bot.
+    async def on_message(self, message):
+        """ On message event handler.
 
-            Connects to discord and starts listening for events.
+            Only read message mentioning the bot.
         """
-        logging.info("Bot is logging in.")
-        await self.client.login(self.token)
-        await self.client.connect()
+        logging.info("Message received.")
+        if message.author == self.user:
+            return
+
+        first_mention = message.mentions[0] if len(message.mentions) > 0 else None
+
+        if first_mention and first_mention.id == self.user.id:
+            await message.channel.send("Hello!")

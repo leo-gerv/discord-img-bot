@@ -13,5 +13,5 @@ import bot
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.NOTSET)
-    bot = bot.Bot(os.environ['TOKEN'])
-    asyncio.run(bot.run())
+    bot = bot.Bot()
+    bot.run(os.environ['TOKEN'])
