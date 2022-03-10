@@ -7,21 +7,22 @@ def run(text):
     Return value: (success, result)
         success: True if the code was found, False otherwise
         result: the result if success is True, None otherwise
+        errmsg: the error message if success is False, None otherwise
     """
 
     ok, data = prepare_dict(text)
     if not ok:
-        return (False, None)
+        return (False, None, 'Invalid code tags')
 
     # TODO: Send the data to a runner
     ok, handle = assign_handle()
 
     if not ok:
-        return (False, None)
+        return (False, None, 'No runners available')
 
-    ok, result = handle.process(data)
+    ok, result, errmsg = handle.process(data)
 
     if not ok:
-        return (False, None)
+        return (False, None, errmsg)
 
-    return (True, result)
+    return (True, result, None)
