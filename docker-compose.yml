@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+  discord-img-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: discord-img-bot
