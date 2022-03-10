@@ -1,2 +1,2 @@
 # discord bot module
-from botclass import Bot
+from .botclass import Bot
