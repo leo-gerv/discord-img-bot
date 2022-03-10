@@ -1,7 +1,9 @@
 # bot.py
 
+from io import BytesIO
 import discord
 import logging
+from .commands import image_treatments
 
 class Bot(discord.Client):
     """ Discord bot class
@@ -28,4 +30,25 @@ class Bot(discord.Client):
         first_mention = message.mentions[0] if len(message.mentions) > 0 else None
 
         if first_mention and first_mention.id == self.user.id:
-            await message.channel.send("Hello!")
+            await self.handle_request(message)
+            
+
+    async def handle_request(self, message):
+        """ Handle a request
+        """
+        try:
+            command = message.content.split(" ")[1]
+
+            img_handler = image_treatments[command]
+            
+            if len(message.attachments) > 0:
+                for attachment in message.attachments:
+                    img_bytes = await attachment.read()
+                    img_bytes = img_handler(img_bytes)
+                    await message.reply(file=discord.File(BytesIO(img_bytes), filename=attachment.filename))
+            else:
+                await message.reply("No image attached.")
+
+        except Exception as e:
+            await message.reply("Please specify a valid command.")
+            logging.error(e)
