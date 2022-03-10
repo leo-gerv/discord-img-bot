@@ -8,3 +8,6 @@ services:
     environment:
       - TOKEN=${TOKEN}
     privileged: true
+networks:
+  discord-img-bot-net:
+    name: discord-img-bot-net
