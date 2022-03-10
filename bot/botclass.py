@@ -46,7 +46,7 @@ class Bot(discord.Client):
                 for attachment in message.attachments:
                     img_bytes = await attachment.read()
                     img = Image.open(BytesIO(img_bytes))
-                    result_img = img_handler(img)
+                    result_img = img_handler(img.convert("RGB"))
                     with BytesIO() as f:
                         result_img.save(f, format="PNG")
                         f.seek(0)
