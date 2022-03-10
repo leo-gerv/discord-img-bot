@@ -1,0 +1,11 @@
+version: '3.9'
+services:
+  discord-img-bot-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: discord-img-bot-runner
+networks:
+  default:
+    external:
+      name: discord-img-bot-net
