@@ -4,7 +4,7 @@ from io import BytesIO
 from PIL import Image
 import discord
 import logging
-from .commands import image_treatments
+from .commands import image_treatments, special_commands
 import re
 
 class Bot(discord.Client):
@@ -39,6 +39,10 @@ class Bot(discord.Client):
         """
         try:
             command = message.content.split(" ")[1]
+
+            if command in special_commands:
+                await special_commands[command](message)
+                return
 
             img_handler = image_treatments[command]
             
