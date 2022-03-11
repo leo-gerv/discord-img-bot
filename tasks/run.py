@@ -1,7 +1,8 @@
 from .utils import prepare_dict
 from .pool import assign_handle
+import numpy as np
 
-def run(text):
+def run(text, array):
     """ Runs the code in the message
     
     Return value: (success, result)
@@ -20,9 +21,10 @@ def run(text):
     if not ok:
         return (False, None, 'No runners available')
 
+    data['array'] = array
     ok, result, errmsg = handle.process(data)
 
     if not ok:
         return (False, None, errmsg)
 
-    return (True, result, None)
+    return (True, np.array(result), None)

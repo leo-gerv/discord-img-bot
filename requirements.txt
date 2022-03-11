@@ -4,3 +4,4 @@ discord.py==1.7.3
 numpy==1.22
 pillow==9.0
 docker==5.0
+six==1.16

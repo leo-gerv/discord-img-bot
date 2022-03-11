@@ -1,3 +1,5 @@
+import logging
+from select import select
 import socket
 import pickle
 import time
@@ -20,29 +22,49 @@ class RunnerHandle:
             errmsg: the error message if success is False, None otherwise
         """
 
+        logging.info(f'Sending data to runner: {str(data)}')
         data_bytes = pickle.dumps(data)
-        self.sock.send(data_bytes)
-        self.sock.settimeout(10)
+        self.sock.sendall(data_bytes)
+        logging.info('Sent data to runner')
+        self.sock.shutdown(socket.SHUT_WR)
+        self.sock.settimeout(15)
 
-        start_time = time.time()
+        time.sleep(10)
 
         result_bytes = bytes()
+        idle_start = None
 
         while True:
             try:
-                result_bytes += self.sock.recv(1024)
-            except ConnectionResetError:
+                ready_rd, _, _ = select([self.sock], [], [], 5)
+                if len(ready_rd) > 0 and self.sock.recv(1024, socket.MSG_PEEK):
+                    result_bytes += self.sock.recv(1024)
+                    logging.info('Received result from runner')
+                    idle_start = None
+                else:
+                    if not idle_start:
+                        idle_start = time.time()
+                        logging.info('No data from runner - starting timeout')
+                    elif time.time() - idle_start > 5:
+                        logging.info('Runner timed out')
+                        break
+            except:
+                logging.info('Runner connection closed/timeout')
                 break
-            except socket.timeout:
-                if time.time() - start_time > 10:
-                    # TODO: find a way to kill the container
-                    return (False, None, 'Runner timeout')
 
-        result = pickle.loads(result_bytes)
+        logging.info(f'Loading result [{len(result_bytes)} bytes]')
+        try:
+            result = pickle.loads(result_bytes)
+        except Exception as e:
+            logging.info(f'Error: {e}')
+            return (False, None, str(e))
+        logging.info('Result loaded')
 
         if result['status'] == 'success':
+            logging.info('Success')
             return (True, result['result'], None)
         else:
+            logging.info('Error')
             return (False, None, result['error'])
 
 def get_handle():

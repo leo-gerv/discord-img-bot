@@ -6,6 +6,7 @@ import discord
 import logging
 from .commands import image_treatments, special_commands
 import re
+import img as IMG
 
 class Bot(discord.Client):
     """ Discord bot class
@@ -41,7 +42,11 @@ class Bot(discord.Client):
             command = message.content.split(" ")[1]
 
             if command in special_commands:
-                await special_commands[command](message)
+                success, result = special_commands[command](message, (await IMG.images_from_msg(message))[0])
+                if success:
+                    await message.reply(file=discord.File(result, filename="result.png"))
+                else:
+                    await message.reply(f"Failed to run your code: {result}")
                 return
 
             img_handler = image_treatments[command]

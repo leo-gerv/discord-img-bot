@@ -5,7 +5,3 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: discord-img-bot-runner
-networks:
-  default:
-    external:
-      name: discord-img-bot-net

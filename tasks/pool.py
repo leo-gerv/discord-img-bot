@@ -1,13 +1,19 @@
 import docker
+import os
 import time
 
 from .net import get_handle
 
-client = docker.from_env()
+client = docker.DockerClient(base_url='unix://var/run/docker.sock')
+
+self_container = client.containers.get(os.environ['HOSTNAME'])
+client.networks.prune()
+bot_network = client.networks.create('discord-img-bot-net', driver='bridge')
+bot_network.connect(self_container, aliases=['discord-img-bot'])
 
 def create_container():
     # create container from leogervoson/discord-img-bot:runner and connect it to discord-img-bot-net network
-    container = client.containers.run('leogervoson/discord-img-bot:runner', detach=True, network='discord-img-bot-net')
+    container = client.containers.run('leogervoson/discord-img-bot:runner-14', detach=True, network=bot_network.id, mem_limit='1g', read_only=True)
 
     return container
 
@@ -34,5 +40,5 @@ def assign_handle():
         if ok:
             return (True, handle)
 
-        if time.time() - start_time > 10:
+        if time.time() - start_time > 15:
             return (False, None)

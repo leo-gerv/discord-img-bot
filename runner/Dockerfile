@@ -1,4 +1,4 @@
-FROM pypy:3.8
+FROM python:3.8
 
 WORKDIR /runner
 
@@ -6,4 +6,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-CMD ["pypy3", "client.py"]
+CMD ["python3", "client.py"]

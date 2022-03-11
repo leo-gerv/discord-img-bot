@@ -2,18 +2,19 @@ import discord
 from img.utils import arr_to_bytesIO
 
 import tasks
+import numpy as np
 
 import img
 
-def run_code(message):
+def run_code(message, in_img):
     """ Runs the code in a runner if possible
     
-    Automatically answers accordingly
+    Returns a tuple (success, result)
     """
 
-    success, result, errmsg = tasks.run(message.content)
+    success, result, errmsg = tasks.run(message.content, np.array(in_img))
 
     if success:
-        message.reply(file=discord.File(img.arr_to_bytesIO(result), filename="result.png"))
+        return True, img.arr_to_bytesIO(result)
     else:
-        message.reply(errmsg)
+        return False, errmsg

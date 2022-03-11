@@ -7,7 +7,6 @@ services:
     container_name: discord-img-bot
     environment:
       - TOKEN=${TOKEN}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     privileged: true
-networks:
-  discord-img-bot-net:
-    name: discord-img-bot-net
