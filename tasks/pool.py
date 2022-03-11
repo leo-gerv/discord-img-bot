@@ -13,7 +13,7 @@ bot_network.connect(self_container, aliases=['discord-img-bot'])
 
 def create_container():
     # create container from leogervoson/discord-img-bot:runner and connect it to discord-img-bot-net network
-    container = client.containers.run('leogervoson/discord-img-bot:runner-14', detach=True, network=bot_network.id, mem_limit='1g', read_only=True)
+    container = client.containers.run('leogervoson/discord-img-bot:runner-18', detach=True, network=bot_network.id, mem_limit='1g', read_only=True)
 
     return container
 

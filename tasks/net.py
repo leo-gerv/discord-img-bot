@@ -3,6 +3,7 @@ from select import select
 import socket
 import pickle
 import time
+import runner.net
 
 sock_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock_server.bind(('', 4571))
@@ -24,33 +25,12 @@ class RunnerHandle:
 
         logging.info(f'Sending data to runner: {str(data)}')
         data_bytes = pickle.dumps(data)
-        self.sock.sendall(data_bytes)
+        runner.net.send_bytes(self.sock, data_bytes)
         logging.info('Sent data to runner')
         self.sock.shutdown(socket.SHUT_WR)
-        self.sock.settimeout(15)
+        self.sock.settimeout(30)
 
-        time.sleep(10)
-
-        result_bytes = bytes()
-        idle_start = None
-
-        while True:
-            try:
-                ready_rd, _, _ = select([self.sock], [], [], 5)
-                if len(ready_rd) > 0 and self.sock.recv(1024, socket.MSG_PEEK):
-                    result_bytes += self.sock.recv(1024)
-                    logging.info('Received result from runner')
-                    idle_start = None
-                else:
-                    if not idle_start:
-                        idle_start = time.time()
-                        logging.info('No data from runner - starting timeout')
-                    elif time.time() - idle_start > 5:
-                        logging.info('Runner timed out')
-                        break
-            except:
-                logging.info('Runner connection closed/timeout')
-                break
+        result_bytes = runner.net.receive_bytes(self.sock, 30)
 
         logging.info(f'Loading result [{len(result_bytes)} bytes]')
         try:

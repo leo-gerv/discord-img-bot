@@ -7,6 +7,7 @@ import time
 
 import numpy
 import scipy
+from net import *
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
@@ -16,25 +17,7 @@ if __name__ == '__main__':
     logging.info('Connected to server')
 
     # receives bytes until the connection is closed
-    raw_bytes = bytes()
-    idle_start = None
-    while True:
-        try:
-            read_socks, _, _ = select([s], [], [], 5)
-            if len(read_socks) > 0 and s.recv(1024, socket.MSG_PEEK):
-                raw_bytes += s.recv(1024)
-                logging.info(f'Received {len(raw_bytes)} bytes total')
-                idle_start = None
-            else:
-                if not idle_start:
-                    logging.info('No data from server')
-                    idle_start = time.time()
-                elif time.time() - idle_start > 5:
-                    logging.info('Server timed out')
-                    break
-        except:
-            logging.info('Connection closed/timeout - evaluating code')
-            break
+    raw_bytes = receive_bytes(s, 30)
 
     data = pickle.loads(raw_bytes)
     ret_dict = {}
@@ -55,7 +38,7 @@ if __name__ == '__main__':
     logging.info(f'Sending result to server: {str(ret_dict)}')
     ret_bytes = pickle.dumps(ret_dict)
     logging.info(f'Sending {len(ret_bytes)} bytes')
-    s.sendall(ret_bytes)
+    send_bytes(s, ret_bytes)
     s.shutdown(socket.SHUT_WR)
     time.sleep(5)
     exit(0)
