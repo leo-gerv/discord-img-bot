@@ -4,6 +4,7 @@ import pickle
 from select import select
 from gen import generate_code_str
 import time
+import os
 
 import numpy
 import scipy
@@ -15,6 +16,11 @@ if __name__ == '__main__':
     s.settimeout(15)
     s.connect(('discord-img-bot', 4571))
     logging.info('Connected to server')
+
+    # send container ID to server
+    container_id = os.environ['HOSTNAME']
+    logging.info(f'Sending container ID: {container_id}')
+    send_bytes(s, container_id.encode('utf-8'))
 
     # receives bytes until the connection is closed
     raw_bytes = receive_bytes(s, 30)
