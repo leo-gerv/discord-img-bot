@@ -23,7 +23,7 @@ def receive_bytes(sock: socket.socket, timeout: float) -> bytes:
     received_bytes = bytes()
     while len(received_bytes) < length:
         received_bytes += sock.recv(length - len(received_bytes))
-        if time.time() - start_time > timeout:
+        if timeout and time.time() - start_time > timeout:
             return None
 
     return received_bytes

@@ -22,8 +22,9 @@ if __name__ == '__main__':
     logging.info(f'Sending container ID: {container_id}')
     send_bytes(s, container_id.encode('utf-8'))
 
-    # receives bytes until the connection is closed
-    raw_bytes = receive_bytes(s, 30)
+    s.settimeout(None)
+    raw_bytes = receive_bytes(s, None)
+    s.settimeout(15)
 
     data = pickle.loads(raw_bytes)
     ret_dict = {}
