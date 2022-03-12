@@ -7,6 +7,7 @@ import logging
 from .commands import image_treatments, special_commands
 import re
 import img as IMG
+import tasks
 
 class Bot(discord.Client):
     """ Discord bot class
@@ -19,7 +20,8 @@ class Bot(discord.Client):
 
             When the bot is ready, print a message to the console.
         """
-        logging.info("Bot is ready.")
+        logging.info("Bot is ready. Creating container pool.")
+        await tasks.init_container_pool()
 
     async def on_message(self, message):
         """ On message event handler.
@@ -42,7 +44,7 @@ class Bot(discord.Client):
             command = message.content.split(" ")[1]
 
             if command in special_commands:
-                success, result = special_commands[command](message, (await IMG.images_from_msg(message))[0])
+                success, result = await special_commands[command](message, (await IMG.images_from_msg(message))[0])
                 if success:
                     await message.reply(file=discord.File(result, filename="result.png"))
                 else:

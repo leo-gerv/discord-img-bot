@@ -1,4 +1,17 @@
 import re
+import asyncio
+
+async def js_settimeout(timeout: float, callback: callable):
+    """ Sets a timeout for a callback
+    """
+
+    await asyncio.sleep(timeout)
+    
+    if asyncio.iscoroutinefunction(callback):
+        await callback()
+    else:
+        callback()
+    
 
 def extract_code(text):
     """ Extracts the python code from the message

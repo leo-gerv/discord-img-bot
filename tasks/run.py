@@ -1,8 +1,9 @@
+import logging
 from .utils import prepare_dict
-from .pool import assign_handle
 import numpy as np
+from .pool import get_handle
 
-def run(text, array):
+async def run(text, array):
     """ Runs the code in the message
     
     Return value: (success, result)
@@ -15,14 +16,13 @@ def run(text, array):
     if not ok:
         return (False, None, 'Invalid code tags')
 
-    # TODO: Send the data to a runner
-    ok, handle = assign_handle()
+    handle = get_handle()
 
-    if not ok:
+    if not handle:
         return (False, None, 'No runners available')
 
     data['array'] = array
-    ok, result, errmsg = handle.process(data)
+    ok, result, errmsg = await handle.process(data)
 
     if not ok:
         return (False, None, errmsg)
